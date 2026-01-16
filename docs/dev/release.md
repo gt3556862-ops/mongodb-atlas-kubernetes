@@ -21,11 +21,15 @@ Most tools are automatically installed for you. Most of them are Go binaries and
 - [devbox](https://www.jetify.com/devbox) to be able to enter a sandbox development environment that includes necessary tools for the release process.
 - [Docker](https://www.docker.com/) to be able to deal with containers.
 
-## Release preparations (minimum n-1 weeks before the actual release)
+## Kubernetes version updates
 
-At least **one** (1) week before the release the Kubernetes Version testing matrix has to be updated both in this repository and the CLI repository https://github.com/mongodb/mongodb-atlas-cli.
+The Kubernetes Version testing matrix is automatically checked via CI, Every week an automated workflow:
+- Monitors Kubernetes and OpenShift version support policy compliance
+- Alerts the team via Slack when version updates are required or the check fails
 
-Please refer to the [CI documentation](ci.md#kubernetes-version-matrix) and submit a pull request, example: https://github.com/mongodb/mongodb-atlas-kubernetes/pull/2161 or https://github.com/mongodb/mongodb-atlas-kubernetes/pull/2082.
+**No manual action is required** unless you receive an alert or the automated check fails. If an alert is received or the check fails, please refer to the [Updating Kubernetes Versions documentation](update-kubernetes-version.md)
+
+Before starting a release, verify that the [Check Kubernetes Versions workflow](.github/workflows/check-kubernetes-versions.yaml) ran successfully recently to ensure versions are up to date.
 
 ## A Note on Versioning with `version.json`
 
@@ -170,11 +174,15 @@ All bundles/package manifests for Operators for operatorhub.io reside in the fol
 
 All 3 PRs for those repos can be pushed from workflow [Push release PRs to RedHat](../../.github/workflows/release-rh.yaml). This can also be run from the CLI using make, please look [at the code](../../.github/workflows/release-rh.yaml) for more details.
 
-The workflow needs 2 parameters:
+The workflow needs 4 parameters:
 - The `version` to release, which is **required**.
 - Whether or not this is a `dryrun`. Set to `false` to do the actual release.
+- The `author` name, which is **required**. This should be the author name as registered in RedHat Connect.
+- The `email` address, which is **required**. This should be the email address of the author as registered in RedHat Connect.
 
 Note when the dryrun is `true` the workflow does everything, except the `git push` is dry run, which should test access credentials, but not make the push really happen.
+
+The `author` and `email` parameters are used to configure the git user identity for commits made during the release process. These should match the credentials registered in your RedHat Connect account to ensure proper attribution of the release.
 
 Once the workflow ends sucessfully, pleasego to the projects PR tabs and complete the PRs to review at:
 * https://github.com/k8s-operatorhub/community-operators/pulls

@@ -197,7 +197,7 @@ DEFAULT_IMAGE_URL := $(TEST_REGISTRY)/mongodb-atlas-kubernetes-operator:$(NEXT_V
 export IMAGE_URL
 
 ifndef IMAGE_URL
-    IMAGE_URL := $(DEFAULT_IMAGE_URL)
+	IMAGE_URL := $(DEFAULT_IMAGE_URL)
 	BUILD_DEPENDENCY := test-docker-image
 else
     $(info --- IMAGE_URL is set externally: $(IMAGE_URL))
@@ -930,7 +930,6 @@ reset-rh-creds: ## Reset the Red Hat repository credentials to the value of GH_T
 
 .PHONY: release-rh
 release-rh: ## Push the release PRs to the Red Hat repos
-	RH_CERTIFICATION_OSPID=$(RH_CERTIFICATION_OSPID) \
 	RH_COMMUNITY_OPERATORHUB_REPO_PATH=$(RH_COMMUNITY_OPERATORHUB_REPO_PATH) \
 	RH_COMMUNITY_OPENSHIFT_REPO_PATH=$(RH_COMMUNITY_OPENSHIFT_REPO_PATH) \
 	RH_CERTIFIED_OPENSHIFT_REPO_PATH=$(RH_CERTIFIED_OPENSHIFT_REPO_PATH) \
@@ -942,3 +941,7 @@ send-sboms: ## Send the SBOMs to Kondukto
 	curl -L $(RELEASE_SBOM_ARM) > $(RELEASE_SBOM_FILE_ARM)
 	make augment-sbom SBOM_JSON_FILE="$(RELEASE_SBOM_FILE_INTEL)"
 	make augment-sbom SBOM_JSON_FILE="$(RELEASE_SBOM_FILE_ARM)"
+
+.PHONY: check-kubernetes-versions
+check-kubernetes-versions: ## Check the Kubernetes versions are supported
+	./scripts/check-kube-versions.sh
